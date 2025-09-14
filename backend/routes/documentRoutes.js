@@ -1,7 +1,7 @@
 // routes/documentRoutes.js
 const express = require("express");
 const multer = require("multer");
-const Document = require("../models/document");
+const Document = require("../models/Document");
 const auth = require("../middleware/auth"); // JWT middleware
 const router = express.Router();
 
