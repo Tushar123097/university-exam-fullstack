@@ -2,36 +2,29 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import axios from "axios";
+import { BASE_URL } from "../config/server";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [message, setMessage] = useState(""); 
+  const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:3000/login", { email, password });
+      const res = await axios.post(`${BASE_URL}/login`, { email, password });
 
-      // Save token
       localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user || { email }));
 
-      // Save user (or fallback to email only)
-      if (res.data.user) {
-        localStorage.setItem("user", JSON.stringify(res.data.user));
-      } else {
-        localStorage.setItem("user", JSON.stringify({ email }));
-      }
-
-      setMessage(res.data.message || "Login successful ✅");
+      setMessage(res.data.message || "Login successful ");
       setTimeout(() => navigate("/dashboard"), 1500);
     } catch (err) {
       const msg = err.response?.data?.message || "Invalid credentials";
       setMessage(msg);
     }
   };
-
   return (
     <div className="w-full relative min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-700 via-indigo-800 to-purple-900 overflow-hidden">
       <div className="absolute inset-0 bg-black/40 z-0"></div>

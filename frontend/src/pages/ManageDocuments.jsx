@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { BASE_URL } from "../config/server";
+// import { BASE_URL } from "../config/server";
 
 const ManageDocuments = () => {
   const [documents, setDocuments] = useState([]);
@@ -15,7 +17,7 @@ const ManageDocuments = () => {
   useEffect(() => {
     const fetchDocs = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/documents", {
+        const res = await axios.get(`${BASE_URL}/documents`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setDocuments(res.data);
@@ -31,7 +33,7 @@ const ManageDocuments = () => {
 
   const handleDelete = async (id) => {
     try {
-      const res = await axios.delete(`http://localhost:3000/documents/${id}`, {
+      const res = await axios.delete(`${BASE_URL}/documents/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setMessage(res.data.message);

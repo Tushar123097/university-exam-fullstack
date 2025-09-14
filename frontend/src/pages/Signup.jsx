@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import axios from "axios";
+import { BASE_URL } from "../config/server";
 
 const Signup = () => {
   const [name, setName] = useState("");
@@ -12,7 +13,7 @@ const Signup = () => {
   const handleSignup = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:3000/signup", { name, email });
+      const res = await axios.post(`${BASE_URL}/signup`, { name, email });
       setMessage(res.data.message); // show success message inline
       setTimeout(() => navigate("/login"), 2000); // redirect after 2 sec
     } catch (err) {

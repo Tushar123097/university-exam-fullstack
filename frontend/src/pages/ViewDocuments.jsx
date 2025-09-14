@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { BASE_URL } from "../config/server";
 
 const ViewDocuments = () => {
   const [documents, setDocuments] = useState([]);
@@ -16,7 +17,7 @@ const ViewDocuments = () => {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.get(
-        `http://localhost:3000/documents?category=${category || ""}&branch=${branch || ""}&semester=${semester || ""}`,
+        `${BASE_URL}/documents?category=${category || ""}&branch=${branch || ""}&semester=${semester || ""}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setDocuments(res.data);
@@ -100,12 +101,12 @@ const ViewDocuments = () => {
               Category: {doc.category} | Branch: {doc.branch} | Semester: {doc.semester}
             </p>
             <iframe
-              src={`http://localhost:3000/uploads/${doc.filename}`}
+              src={`${BASE_URL}/uploads/${doc.filename}`}
               title={doc.filename}
               className="w-full h-48 sm:h-56 md:h-64 lg:h-48 rounded-lg mb-2"
             ></iframe>
             <a
-              href={`http://localhost:3000/uploads/${doc.filename}`}
+              href={`${BASE_URL}/uploads/${doc.filename}`}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-auto py-2 px-4 rounded-xl bg-yellow-400 hover:bg-yellow-500 text-white font-semibold transition"

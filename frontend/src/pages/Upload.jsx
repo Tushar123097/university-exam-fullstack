@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { BASE_URL } from "../config/server";
 
 const Upload = () => {
   const [category, setCategory] = useState("");
@@ -29,7 +30,7 @@ const Upload = () => {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.post(
-        "http://localhost:3000/documents/upload",
+        `${BASE_URL}/documents/upload`,
         formData,
         {
           headers: {
