@@ -6,18 +6,44 @@ const auth = require("../middleware/auth"); // JWT middleware
 const router = express.Router();
 
 // -------------------- MULTER CONFIG --------------------
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/"); // files stored in uploads folder
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + "-" + file.originalname);
-  },
-});
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, "uploads/"); // files stored in uploads folder
+//   },
+//   filename: function (req, file, cb) {
+//     cb(null, Date.now() + "-" + file.originalname);
+//   },
+// });
 
+// const upload = multer({ storage });
+
+// // -------------------- UPLOAD DOCUMENT --------------------
+// router.post("/upload", auth, upload.single("file"), async (req, res) => {
+//   try {
+//     const { category, branch, semester } = req.body;
+
+//     if (!req.file) return res.status(400).json({ error: "File is required" });
+//     if (!category || !branch || !semester)
+//       return res.status(400).json({ error: "Category, branch, and semester are required" });
+
+//     const document = new Document({
+//       filename: req.file.filename,
+//       uploader: req.user.id, // from JWT
+//       category,
+//       branch,
+//       semester,
+//     });
+
+//     await document.save();
+//     res.json({ message: "Document uploaded successfully", document });
+//   } catch (err) {
+//     console.error("Upload error:", err);
+//     res.status(500).json({ error: "Upload failed" });
+//   }
+// });
+const storage = multer.memoryStorage(); // keep file in memory
 const upload = multer({ storage });
 
-// -------------------- UPLOAD DOCUMENT --------------------
 router.post("/upload", auth, upload.single("file"), async (req, res) => {
   try {
     const { category, branch, semester } = req.body;
@@ -27,8 +53,9 @@ router.post("/upload", auth, upload.single("file"), async (req, res) => {
       return res.status(400).json({ error: "Category, branch, and semester are required" });
 
     const document = new Document({
-      filename: req.file.filename,
-      uploader: req.user.id, // from JWT
+      filename: req.file.originalname,
+      data: req.file.buffer, // store file content
+      uploader: req.user.id,
       category,
       branch,
       semester,
@@ -41,6 +68,7 @@ router.post("/upload", auth, upload.single("file"), async (req, res) => {
     res.status(500).json({ error: "Upload failed" });
   }
 });
+
 
 // -------------------- GET DOCUMENTS (with filters) --------------------
 router.get("/", auth, async (req, res) => {
