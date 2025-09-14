@@ -10,18 +10,37 @@ const ViewDocuments = () => {
   const [branch, setBranch] = useState("");
   const [semester, setSemester] = useState("");
   const [message, setMessage] = useState("");
+  const [pdfUrls, setPdfUrls] = useState({}); // store blob URLs for each doc
 
   const navigate = useNavigate();
 
+  const token = localStorage.getItem("token");
+
   const fetchDocuments = async () => {
     try {
-      const token = localStorage.getItem("token");
       const res = await axios.get(
         `${BASE_URL}/documents?category=${category || ""}&branch=${branch || ""}&semester=${semester || ""}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setDocuments(res.data);
       setMessage(res.data.length === 0 ? "No documents found." : "");
+
+      // Fetch PDF blobs for each document
+      const pdfs = {};
+      await Promise.all(
+        res.data.map(async (doc) => {
+          try {
+            const fileRes = await axios.get(`${BASE_URL}/documents/${doc._id}/view`, {
+              headers: { Authorization: `Bearer ${token}` },
+              responseType: "blob",
+            });
+            pdfs[doc._id] = URL.createObjectURL(fileRes.data);
+          } catch (err) {
+            console.error("Error fetching PDF for", doc.filename);
+          }
+        })
+      );
+      setPdfUrls(pdfs);
     } catch (err) {
       console.error(err);
       setMessage("Error fetching documents.");
@@ -32,10 +51,16 @@ const ViewDocuments = () => {
     fetchDocuments();
   }, [category, branch, semester]);
 
+  const openPdf = (id) => {
+    if (pdfUrls[id]) {
+      window.open(pdfUrls[id]);
+    } else {
+      alert("PDF not loaded yet.");
+    }
+  };
+
   return (
     <div className="w-full min-h-screen px-4 py-8 bg-gradient-to-r from-blue-700 via-indigo-800 to-purple-900 flex flex-col items-center">
-      
-      {/* Back Button */}
       <button
         onClick={() => navigate("/dashboard")}
         className="self-start mb-4 py-2 px-4 rounded-xl bg-yellow-400 hover:bg-yellow-500 text-white font-semibold transition"
@@ -90,30 +115,37 @@ const ViewDocuments = () => {
 
       {/* Document List */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl">
-       {documents.map((doc) => (
-  <motion.div key={doc._id} className="...">
-    <h3>{doc.filename}</h3>
-    <p>Category: {doc.category} | Branch: {doc.branch} | Semester: {doc.semester}</p>
-    
-    {/* Embed PDF */}
-    <iframe
-      src={`${BASE_URL}/documents/${doc._id}/view`}
-      title={doc.filename}
-      className="w-full h-48 sm:h-56 md:h-64 lg:h-48 rounded-lg mb-2"
-    ></iframe>
+        {documents.map((doc) => (
+          <motion.div
+            key={doc._id}
+            className="bg-white/10 backdrop-blur-md p-4 rounded-xl flex flex-col"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <h3 className="text-white font-bold">{doc.filename}</h3>
+            <p className="text-white text-sm mb-2">
+              Category: {doc.category} | Branch: {doc.branch} | Semester: {doc.semester}
+            </p>
 
-    {/* Open in new tab */}
-    <a
-      href={`${BASE_URL}/documents/${doc._id}/view`}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="mt-auto py-2 px-4 rounded-xl bg-yellow-400 hover:bg-yellow-500 text-white font-semibold transition"
-    >
-      Open PDF
-    </a>
-  </motion.div>
-))}
+            {/* Embed PDF */}
+            {pdfUrls[doc._id] && (
+              <iframe
+                src={pdfUrls[doc._id]}
+                title={doc.filename}
+                className="w-full h-48 sm:h-56 md:h-64 lg:h-48 rounded-lg mb-2"
+              ></iframe>
+            )}
 
+            {/* Open in new tab */}
+            <button
+              onClick={() => openPdf(doc._id)}
+              className="mt-auto py-2 px-4 rounded-xl bg-yellow-400 hover:bg-yellow-500 text-white font-semibold transition"
+            >
+              Open PDF
+            </button>
+          </motion.div>
+        ))}
       </div>
     </div>
   );

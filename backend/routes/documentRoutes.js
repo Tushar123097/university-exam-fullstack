@@ -71,6 +71,7 @@ router.get("/", auth, async (req, res) => {
 
 // -------------------- VIEW DOCUMENT --------------------
 // Optional: Only for uploader (or you can make public)
+// routes/documentRoutes.js
 router.get("/:id/view", auth, async (req, res) => {
   try {
     const doc = await Document.findById(req.params.id);
@@ -83,6 +84,15 @@ router.get("/:id/view", auth, async (req, res) => {
       return res.status(404).json({ error: "File not found on server" });
     }
 
+    // Set correct headers for PDF / DOC
+    const ext = path.extname(doc.filename).toLowerCase();
+    let contentType = "application/octet-stream"; // default
+    if (ext === ".pdf") contentType = "application/pdf";
+    else if (ext === ".doc") contentType = "application/msword";
+    else if (ext === ".docx") contentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+
+    res.setHeader("Content-Type", contentType);
+    res.setHeader("Content-Disposition", `inline; filename="${doc.filename}"`);
     res.sendFile(filePath);
   } catch (err) {
     console.error("View document error:", err);
