@@ -1,4 +1,2 @@
-// src/config/server.js
-const BASE_URL = "https://university-exam-fullstack.onrender.com";
-
-export { BASE_URL };   // ✅ named export
+const BASE_URL = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
+export { BASE_URL };

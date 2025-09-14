@@ -90,31 +90,30 @@ const ViewDocuments = () => {
 
       {/* Document List */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl">
-        {documents.map((doc) => (
-          <motion.div
-            key={doc._id}
-            className="bg-white/10 backdrop-blur-md p-4 rounded-xl shadow-lg text-white flex flex-col items-center"
-            whileHover={{ scale: 1.03 }}
-          >
-            <h3 className="font-bold text-lg mb-2 text-center truncate w-full">{doc.filename}</h3>
-            <p className="italic text-gray-200 mb-2 text-center">
-              Category: {doc.category} | Branch: {doc.branch} | Semester: {doc.semester}
-            </p>
-            <iframe
-              src={`${BASE_URL}/uploads/${doc.filename}`}
-              title={doc.filename}
-              className="w-full h-48 sm:h-56 md:h-64 lg:h-48 rounded-lg mb-2"
-            ></iframe>
-            <a
-              href={`${BASE_URL}/uploads/${doc.filename}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-auto py-2 px-4 rounded-xl bg-yellow-400 hover:bg-yellow-500 text-white font-semibold transition"
-            >
-              Open PDF
-            </a>
-          </motion.div>
-        ))}
+       {documents.map((doc) => (
+  <motion.div key={doc._id} className="...">
+    <h3>{doc.filename}</h3>
+    <p>Category: {doc.category} | Branch: {doc.branch} | Semester: {doc.semester}</p>
+    
+    {/* Embed PDF */}
+    <iframe
+      src={`${BASE_URL}/documents/${doc._id}/view`}
+      title={doc.filename}
+      className="w-full h-48 sm:h-56 md:h-64 lg:h-48 rounded-lg mb-2"
+    ></iframe>
+
+    {/* Open in new tab */}
+    <a
+      href={`${BASE_URL}/documents/${doc._id}/view`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="mt-auto py-2 px-4 rounded-xl bg-yellow-400 hover:bg-yellow-500 text-white font-semibold transition"
+    >
+      Open PDF
+    </a>
+  </motion.div>
+))}
+
       </div>
     </div>
   );

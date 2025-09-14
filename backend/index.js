@@ -58,6 +58,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
+const path = require("path");
 
 const transporter = require("./nodemailerTransporter");
 const documentRoutes = require("./routes/documentRoutes");
@@ -84,7 +85,7 @@ const userSchema = new mongoose.Schema({
 const User = mongoose.model("User", userSchema);
 
 // Routes
-app.use("/documents", documentRoutes);
+// app.use("/documents", documentRoutes);
 
 // Start server
 const PORT = process.env.PORT || 5000;
@@ -181,13 +182,14 @@ app.get("/me", authMiddleware, async (req, res) => {
 
 
 // Serve uploaded files statically
-app.use("/uploads", express.static("uploads"));
+// app.use("/uploads", express.static("uploads"));
+
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 
 // -------------------- DOCUMENT ROUTES --------------------
 // This must be **after** `app` is created
 app.use("/documents", documentRoutes);
 
 // -------------------- START SERVER --------------------
-app.listen(3000, () => {
-  console.log("Server running on http://localhost:3000");
-});
+
