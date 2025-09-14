@@ -1,21 +1,74 @@
+// const express = require("express");
+// const mongoose = require("mongoose");
+// const cors = require("cors");
+// const jwt = require("jsonwebtoken");
+// require("dotenv").config();
+// require('dotenv').config({ path: '/etc/secrets/.env' });
+
+//const documentRoutes = require("./routes/documentRoutes");app.use("/documents", documentRoutes);
+
+
+// const transporter = require("./nodemailerTransporter");
+// const documentRoutes = require("./routes/documentRoutes"); // require first
+
+// const app = express(); // <-- app must be created first
+// app.use(express.json());
+// app.use(cors());
+
+// MongoDB connection
+// mongoose
+//   .connect("mongodb://127.0.0.1:27017/myNewDatabase", {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true,
+//   })
+//   .then(() => console.log("MongoDB connected"))
+//   .catch((err) => console.error("MongoDB error:", err));
+
+// User Schema
+// const userSchema = new mongoose.Schema({
+//   name: String,
+//   email: { type: String, unique: true },
+//   password: String,
+// });
+// const User = mongoose.model("User", userSchema);
+
+// const mongoose = require("mongoose");
+
+// Connect to MongoDB Atlas
+// mongoose
+//   .connect(process.env.MONGO_URI, {       // use MONGO_URI from Render
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true,
+//   })
+//   .then(() => console.log("MongoDB connected"))
+//   .catch((err) => console.error("MongoDB error:", err));
+
+// // User Schema
+// const userSchema = new mongoose.Schema({
+//   name: String,
+//   email: { type: String, unique: true },
+//   password: String,
+// });
+// const User = mongoose.model("User", userSchema);
+
+// Helper: Generate random password
+
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
-//const documentRoutes = require("./routes/documentRoutes");app.use("/documents", documentRoutes);
-
 
 const transporter = require("./nodemailerTransporter");
-const documentRoutes = require("./routes/documentRoutes"); // require first
+const documentRoutes = require("./routes/documentRoutes");
 
-const app = express(); // <-- app must be created first
+const app = express();
 app.use(express.json());
 app.use(cors());
 
-// MongoDB connection
+// MongoDB Atlas connection
 mongoose
-  .connect("mongodb://127.0.0.1:27017/myNewDatabase", {
+  .connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
@@ -30,7 +83,16 @@ const userSchema = new mongoose.Schema({
 });
 const User = mongoose.model("User", userSchema);
 
+// Routes
+app.use("/documents", documentRoutes);
+
+// Start server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+
 // Helper: Generate random password
+
 function generatePassword() {
   return Math.random().toString(36).slice(-8);
 }
