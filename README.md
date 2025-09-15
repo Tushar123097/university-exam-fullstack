@@ -7,17 +7,7 @@ Stay tuned for updates!
 - Project is in progress ⏳  
 - Features are being added step by step  
 - Documentation will be updated soon  
-
-## 🛠️ Tech Stack (Planned)
-- Frontend: [Your choice here]
-- Backend: [Your choice here]
-- Database: [Your choice here]
-
-## 📅 Roadmap
-- [ ] Setup project structure  
-- [ ] Implement core features  
-- [ ] Add UI/UX improvements  
-- [ ] Write tests and documentation  
+ 
 
 ---
 
